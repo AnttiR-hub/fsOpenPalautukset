@@ -4,9 +4,6 @@ sequenceDiagram
     participant server
 
     browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/notes
-    activate server
-    server-->>browser: HTML document
-    deactivate server
 
     Note right of browser: Selain lähettää formiin kirjoitetun viestin POST-metodilla
 
