@@ -31,4 +31,7 @@ sequenceDiagram
 
     Note right of browser: Selain hakee palvelimelta data.json -tiedoston datan
 
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/spa
+
+    Note right of browser: Selain lähettää formiin kirjoitetun viestin POST-metodilla json-tiedostona
 ```
