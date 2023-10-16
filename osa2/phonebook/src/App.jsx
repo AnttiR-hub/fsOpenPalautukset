@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import personService from './services/persons'
 
 const Filter = ({value, handleChange}) => {
   return(
@@ -35,27 +36,43 @@ const Persons = ({persons}) => {
   )
 }
 
+
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' ,
-      nro: '0441234567'
-    }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNro, setNewNro] = useState('')
   const [filterValue, setNewFilter] = useState('')
 
+  useEffect(()=>{
+    personService.getAll().then(response =>{setPersons(response.data)})
+  })
+
+  const deletePerson = id => {
+    const person = persons.find(n => n.id === id)
+    if(window.confirm(`Delete ${person.name} ?`))
+    {
+      personService.deletePerson(id)
+      setPersons(persons.filter(persons => persons.id !== id))
+    }
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
-    const personObj =[{
+    const personObj = {
       name: newName,
-      nro: newNro
-    }]
+      number: newNro
+    }
 
     if(persons.find((elem) => elem.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      //alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook. Want to replace old number?`)) {
+        const updatedPerson = persons.find((elem) => elem.name === newName)
+        console.log(updatedPerson)
+        personService.update(updatedPerson.id, personObj)
+      }
+
     } else {
-      setPersons(persons.concat(personObj))
+      personService.create(personObj).then(response => {console.log(response.data)})
     }
   }
 
@@ -68,7 +85,16 @@ const App = () => {
 const filteredPersons = persons.map(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase()))?
 persons.filter(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase())):persons
 
-const allPersons = filteredPersons.map(person => {return  <p key={person.name}> {person.name} {person.nro}</p>})
+const allPersons = filteredPersons.map(person => {
+   return( 
+     <div key={person.id}>
+      <p> {person.name} {person.number}</p> 
+      <button type="button" onClick={() => deletePerson(person.id)}>Delete</button>
+     </div> 
+   )
+  }
+  )
+
 
   return (
     <div>
