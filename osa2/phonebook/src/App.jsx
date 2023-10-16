@@ -2,6 +2,18 @@
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({value, handleChange}) => {
   return(
   <div>
@@ -42,6 +54,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNro, setNewNro] = useState('')
   const [filterValue, setNewFilter] = useState('')
+  const [notification, setNotification] = useState(null)
+
 
   useEffect(()=>{
     personService.getAll().then(response =>{setPersons(response.data)})
@@ -51,8 +65,14 @@ const App = () => {
     const person = persons.find(n => n.id === id)
     if(window.confirm(`Delete ${person.name} ?`))
     {
-      personService.deletePerson(id)
+      personService.deletePerson(id).then(response => {console.log(response.data)}).catch(() => {
+        setNotification(`Information of ${person.name} has already been removed from server`)
+      })
       setPersons(persons.filter(persons => persons.id !== id))
+      setNotification(`Successfully deleted ${person.name}`)
+          setTimeout(() => {
+          setNotification(null)
+        }, 5000)
     }
   }
 
@@ -68,11 +88,22 @@ const App = () => {
       if(window.confirm(`${newName} is already added to phonebook. Want to replace old number?`)) {
         const updatedPerson = persons.find((elem) => elem.name === newName)
         console.log(updatedPerson)
-        personService.update(updatedPerson.id, personObj)
+        personService.update(updatedPerson.id, personObj).then(response => {console.log(response.data)}).catch((err) => {
+          setNotification(`${err}`)
+        })
+        setTimeout(() => {
+          setNotification(`Number of ${newName} is changed`)
+        }, 5000)
       }
 
     } else {
-      personService.create(personObj).then(response => {console.log(response.data)})
+      personService.create(personObj).then(response => {console.log(response.data)}).catch((err) => {
+        setNotification(`${err}`)
+      })
+      setNotification(`Successfully added ${newName}`)
+          setTimeout(() => {
+          setNotification(null)
+        }, 5000)
     }
   }
 
@@ -80,7 +111,6 @@ const App = () => {
  const handleNewName = (event) =>{setNewName(event.target.value)}
  const handleNewNro = (event) =>{setNewNro(event.target.value)}  
  const handleNewFilter = (event) =>{setNewFilter(event.target.value)}
-
 
 const filteredPersons = persons.map(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase()))?
 persons.filter(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase())):persons
@@ -98,6 +128,7 @@ const allPersons = filteredPersons.map(person => {
 
   return (
     <div>
+      <Notification message={notification} />
       <Filter value={filterValue} handleChange={handleNewFilter}/>
       <h2>Phonebook</h2>
       <Form onSubmit={addPerson} nameValue={newName} handleNameValue={handleNewName} nroValue={newNro} handleNroValue={handleNewNro} />
