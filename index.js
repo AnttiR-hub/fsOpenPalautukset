@@ -1,5 +1,10 @@
+const morgan = require('morgan')
 const express = require('express')
 const app = express()
+
+app.use(express.json())
+app.use(morgan('tiny'))
+morgan.token('body', (req) => JSON.stringify(req.body))
 
 let persons = 
   {
@@ -49,6 +54,27 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).end()
   }
+})
+
+const postMorgan = morgan(':method :url :status :res[content-length] - :response-time ms :body')
+
+app.post('/api/persons', postMorgan, (req, res, next) => {
+  const newPerson = req.body
+  if(!newPerson.name || !newPerson.number) {
+    return res.status(400).json({
+			error: 'name or number missing'
+		})
+  }else if (persons.persons.find(elm => elm.name === newPerson.name)) {
+    return res.status(400).json({
+			error: 'name must be unique'
+		})
+  }else{
+    const id = Math.floor(Math.random() * 10000)
+    newPerson.id = id.toString()
+    persons.persons = persons.persons.concat(newPerson)
+
+    res.json(newPerson)
+    }
 })
 
 app.get('/info', (req, res) => {
