@@ -58,8 +58,10 @@ const App = () => {
 
 
   useEffect(()=>{
-    personService.getAll().then(response =>{setPersons(response.data)})
-  })
+    personService.getAll().then(response =>{
+      setPersons(response.data.persons)
+    })
+  }, [])
 
   const deletePerson = id => {
     const person = persons.find(n => n.id === id)
@@ -111,6 +113,7 @@ const App = () => {
  const handleNewName = (event) =>{setNewName(event.target.value)}
  const handleNewNro = (event) =>{setNewNro(event.target.value)}  
  const handleNewFilter = (event) =>{setNewFilter(event.target.value)}
+
 
 const filteredPersons = persons.map(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase()))?
 persons.filter(elem => elem.name.toLowerCase().includes(filterValue.toLowerCase())):persons
