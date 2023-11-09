@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcryptjs')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const api = supertest(app)
 
 const initialBlogs = [
@@ -55,6 +57,21 @@ const initialBlogs = [
   }  
 ]
 
+beforeEach(async () => {  
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash("password", 10)
+
+  const user = new User({
+       username: "Ana",
+       name: "Antti",
+       blogs: [],
+       passwordHash
+    })
+  
+    await user.save()
+})
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   const blogObjects = initialBlogs
@@ -67,7 +84,7 @@ beforeEach(async () => {
 
     const savePromises = blogObjects.map(blog => blog.save())
     await Promise.all(savePromises)
-  })
+  }, 1000)
 
   describe('when there is initially some blogs saved', () => {
 
@@ -81,7 +98,15 @@ beforeEach(async () => {
       expect(response.body[0].id).toBeDefined()
     })
 
-    test('blog post can be added with POST-method', async () => {
+    test('blog can be added with POST-method', async () => {
+
+      const user = {
+        username: "Ana",
+        password: "password",
+      }
+
+      const userLogin = await api.post('/api/login').send(user)
+
       const newBlog = 
         {
             title: 'Test Blog',
@@ -90,13 +115,21 @@ beforeEach(async () => {
             likes: 7,
         }
 
-      await api.post('/api/blogs').send(newBlog)
+      await api.post('/api/blogs').send(newBlog).set('Authorization', `bearer ${userLogin.body.token}`)
 
       const response = await api.get('/api/blogs').expect(200)
       expect(response.body).toHaveLength(initialBlogs.length + 1)
     })
 
     test('if likes are not defined then value is set to 0', async () => {
+
+      const user = {
+        username: "Ana",
+        password: "password",
+      }
+
+      const userLogin = await api.post('/api/login').send(user)
+
       const newBlog =
         {
             title: 'Test Blog',
@@ -104,13 +137,21 @@ beforeEach(async () => {
             url: 'www.blogs.org'
         }
 
-      await api.post('/api/blogs').send(newBlog)
+      await api.post('/api/blogs').send(newBlog).set('Authorization', `bearer ${userLogin.body.token}`)
 
       const response = await api.get('/api/blogs').expect(200)
       expect(response.body[response.body.length -1].likes).toEqual(0)
     })
 
     test('return 400 if title or url not defined', async () => {
+
+      const user = {
+        username: "Ana",
+        password: "password",
+      }
+
+      const userLogin = await api.post('/api/login').send(user)
+
       const newBlog =
         {
             author: 'D. B. Blogger',
@@ -118,17 +159,34 @@ beforeEach(async () => {
             likes: 7,
         }
 
-      await api.post('/api/blogs').send(newBlog).expect(400)
+      await api.post('/api/blogs').send(newBlog).expect(400).set('Authorization', `bearer ${userLogin.body.token}`)
     })
 })
 
 describe('deleting a blog', () => {
 
   test('blog can be deleted', async () => {
-    const blogs = await api.get('/api/blogs')
-    await api.delete(`/api/blogs/${blogs.body[0].id}`)
+    const user = {
+      username: "Ana",
+      password: "password",
+    }
+
+    const userLogin = await api.post('/api/login').send(user)
+
+    const newBlog =
+        {
+            title: 'Test Blog',
+            author: 'D. B. Blogger',
+            url: 'www.blogs.org'
+        }
+
+    const post =  await api.post('/api/blogs').send(newBlog).set('Authorization', `bearer ${userLogin.body.token}`)
+
+    await api.delete(`/api/blogs/${post.body.id}`).set('Authorization', `bearer ${userLogin.body.token}`)
+
     const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(initialBlogs.length - 1)
+
+    expect(response.body).toHaveLength(initialBlogs.length)
   })
 })
 
@@ -153,6 +211,21 @@ describe('updating a blog', () => {
   })
 })
 
+describe('user tests', () => {
+  test('cant create invalid user', async () => {
+
+    const newUser = {
+        username: 'an',
+        name: 'Anthi',
+        password: 'takkauni',
+    }
+
+    const result = await api.post('/api/users').send(newUser).expect(400)
+
+    expect(result.body.error).toContain('password or username must be at least 3 characters long')
+  })
+
+})
 
 afterAll(async () => {
   await mongoose.connection.close()
