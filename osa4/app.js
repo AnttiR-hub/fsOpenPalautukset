@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const blogRouter = require('./controllers/blogs')
 const userRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
+const testingRouter = require('./controllers/testing')
 const middleware = require('./utils/middleware')
 require('dotenv').config()
 
@@ -19,5 +20,10 @@ app.use(middleware.userExtractor)
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)
 app.use('/api/login', loginRouter)
+
+if (process.env.NODE_ENV === 'test') {  
+  const testingRouter = require('./controllers/testing')  
+  app.use('/api/testing', testingRouter)
+}
 
 module.exports = app
