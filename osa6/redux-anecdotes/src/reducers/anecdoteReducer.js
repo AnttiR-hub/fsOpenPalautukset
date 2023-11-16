@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -23,7 +24,22 @@ const reducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
 
-  return state
+  switch (action.type) {
+    case 'INCREMENT':
+      const indexOfVoted = state.findIndex(elem => elem.id === action.id)
+      state[indexOfVoted].votes += 1
+      return state
+
+    default:
+      return state
+  }
+}
+
+export const voteAnecdote = (id) => {
+  return {
+    type: 'INCREMENT',
+    id:id
+  }
 }
 
 export default reducer
