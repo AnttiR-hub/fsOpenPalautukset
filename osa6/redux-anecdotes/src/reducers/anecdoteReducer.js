@@ -1,4 +1,7 @@
 /* eslint-disable no-case-declarations */
+
+import {createSlice} from '@reduxjs/toolkit'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -20,26 +23,28 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
-
-  switch (action.type) {
-    case 'INCREMENT':
-      const indexOfVoted = state.findIndex(elem => elem.id === action.id)
-      state[indexOfVoted].votes += 1
-      return state
-
-    default:
-      return state
+const anecdoteSlice = createSlice({
+  name: 'anecdote',
+  initialState: initialState,
+  reducers: {
+      voteAnecdote(state, action){
+        const indexOfVoted = state.findIndex(elem => elem.id === action.payload)
+        state[indexOfVoted].votes += 1
+        state.sort((a, b) => b.votes - a.votes)
+      },
+      addAnecdote(state, action){
+        const newAnecdote = {
+          content: action.payload,
+          id: getId(),
+          votes: 0
+        }
+        state.push(newAnecdote)
+        state.sort((a, b) => b.votes - a.votes)
+      }
   }
-}
+})
 
-export const voteAnecdote = (id) => {
-  return {
-    type: 'INCREMENT',
-    id:id
-  }
-}
+export const {voteAnecdote, addAnecdote} =anecdoteSlice.actions
+export default anecdoteSlice.reducer
 
-export default reducer
+
