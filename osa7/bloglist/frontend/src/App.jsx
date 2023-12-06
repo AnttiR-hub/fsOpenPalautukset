@@ -6,22 +6,17 @@ import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import UsersInfo from './components/UsersInfo'
+import SingleUser from './components/SingleUser'
+import SingleBlog from './components/SingleBlog'
 
 import loginService from './services/login'
 import { getBlogs, setToken } from './request'
-
 import { useNotificationDispatch } from './notificationContext'
 import UserContext from './userContext'
-import SingleUser from './components/SingleUser'
-import SingleBlog from './components/SingleBlog'
 
 import { Form, Button, Navbar, Nav } from 'react-bootstrap'
 
 const App = () => {
-
-  const padding = {
-    padding: 5
-  }
 
   const formRef = useRef()
 
@@ -101,8 +96,6 @@ const App = () => {
       marginBottom: 5
     }
 
-
-
     return (
       <div>
         <h2>blogs</h2>
@@ -143,6 +136,10 @@ const App = () => {
         </Form>
       </div>
     )
+  }
+
+  const padding = {
+    padding: 5
   }
 
   return (
