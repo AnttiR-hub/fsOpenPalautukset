@@ -1,74 +1,70 @@
-import { useState } from 'react'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { createBlog } from '../request'
+import { useNotificationDispatch } from '../notificationContext'
+
+import { Table, Form, Button } from 'react-bootstrap'
 
 
-const NewBlog = ({ newBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+const NewBlog = () => {
+  const queryClient = useQueryClient()
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
+  const dispatch = useNotificationDispatch()
 
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
+  const newBlogMutation = useMutation({ mutationFn: createBlog,
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData('blogs')
+      queryClient.setQueryData('blogs', blogs.concat(newBlog) )
+    }
+  })
 
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
-  }
-
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
-    newBlog({
-      title: title,
-      author: author,
-      url: url,
-    })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+
+    const title = event.target.title.value
+    const author = event.target.author.value
+    const url = event.target.url.value
+
+    event.target.title.value = ''
+    event.target.author.value = ''
+    event.target.url.value = ''
+
+    newBlogMutation.mutate({ title, author, url })
+    console.log('new blog')
+
+    await dispatch({ type: 'showNotification', payload: `You added ${title} by ${author} !` })
+
+    setTimeout(() => {
+      dispatch({ type: 'hideNotification' })
+    }, 5000)
   }
 
   return (
     <div>
-      <h2>Create new blog</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          <p> Title: </p>
-          <input
+      <h2>Create new</h2>
+      <Form onSubmit={addBlog}>
+        <Form.Group>
+          <Form.Label> Title: </Form.Label>
+          <Form.Control
             type="text"
-            value={title}
-            name="Title"
-            onChange={handleTitleChange}
+            name="title"
             placeholder='write title here'
-            id='title'
           />
-        </div>
-        <div>
-          <p> Author: </p>
-          <input
+          <Form.Group> Author: </Form.Group>
+          <Form.Control
             type="text"
-            value={author}
-            name="Author"
-            onChange={handleAuthorChange}
+            name="author"
             placeholder='write author here'
-            id='author'
           />
-        </div>
-        <div>
-          <p> Url: </p>
-          <input
+
+          <Form.Label> URL: </Form.Label>
+          <Form.Control
             type="text"
-            value={url}
             name="url"
-            onChange={handleUrlChange}
             placeholder='write url here'
-            id='url'
           />
-        </div>
-        <button type="submit" id='create-button'>Create</button>
-      </form>
+          <Button type="submit" id='create-button'>Create</Button>
+        </Form.Group>
+      </Form>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const Comment = require('../models/comment')
 
 
 blogRouter.get('/', async (request, response) => {
@@ -71,6 +72,31 @@ blogRouter.delete('/:id', async (request, response) => {
     await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
     response.json(blog)
     })
+
+    blogRouter.get("/:id/comments", async (request, response) => {
+      const comments = await Comment.find({ blogs: request.params.id });
+      response.json(comments);
+    });
+
+    blogRouter.post("/:id/comments", async (request, response) => {
+      const body = request.body;
+      const blog = await Blog.findById(request.params.id)
+  
+      const comment = new Comment({
+        content: body.content,
+        blogs: blog._id
+      });
+    
+      console.log(comment)
+
+      if (body.content === undefined) {
+        response.status(400).end();
+      } else {
+        const savedComment = await comment.save();
+  
+        response.status(201).json(savedComment);
+      }
+    }); 
 
 
   
