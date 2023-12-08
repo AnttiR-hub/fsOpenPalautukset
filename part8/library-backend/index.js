@@ -108,15 +108,15 @@ const typeDefs = `
     addBook(
       title: String!
       author: String!
-      published: Int!
+      published: String!
       genres: [String!]!
     ): Book
-    editAuthor(name: String!, setBornTo: Int!): Author
+    editAuthor(name: String!, setBornTo: String!): Author
   }
 
   type Author {
     name: String!
-    born: Int
+    born: String
     bookCount: Int!
   }
 
