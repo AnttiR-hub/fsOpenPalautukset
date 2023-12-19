@@ -5,7 +5,8 @@ import { useState } from 'react'
 
 const Authors = (props) => {
   const [name, setName] = useState('')
-  const [setBornTo, setSetBornTo] = useState('')
+  const [born, setBorn] = useState('')
+  
 
   const [ editBorn ] = useMutation(editAuthor, {
     refetchQueries: [ { query: allAuthors } ]  })
@@ -16,6 +17,8 @@ const Authors = (props) => {
   if (result.loading)  {
     return <div>loading authors...</div>
   }
+
+
 
   if (!props.show) {
     return null
@@ -28,10 +31,10 @@ const Authors = (props) => {
 
     console.log('edit author')
 
-    editBorn({variables: {name, setBornTo}})
+    editBorn({variables: {name, born}})
 
     setName('')
-    setSetBornTo('')
+    setBorn('')
   }
 
 
@@ -54,27 +57,28 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-
+    {!props.token ? null :
       <div>
         <h2>Edit birthyear</h2>
         <form onSubmit={submit}>
-          <div>
-            name
-            <input
-            value={name}
-            onChange={({ target }) => setName(target.value)}
-            />
-          </div>
+        <select value={name} onChange={({ target }) => setName(target.value)}>
+            {authors.map(a => 
+              <option value={a.name} key={a.name}>
+                {a.name}
+              </option>
+            )}
+          </select>
           <div>
             born
             <input
-            value={setBornTo}
-            onChange={({ target }) => setSetBornTo(target.value)}
+            value={born}
+            onChange={({ target }) => setBorn(target.value)}
             />
             <button type="submit">edit birthyear</button>
           </div>
         </form>
       </div>
+    } 
     </div>
     
   )
