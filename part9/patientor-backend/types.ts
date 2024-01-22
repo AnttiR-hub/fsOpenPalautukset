@@ -48,8 +48,8 @@ export interface HealthCheckEntry extends BaseEntry {
 }
 
 export interface SickLeave {
-    start: string;
-    end: string;
+    startDate: string;
+    endDate: string;
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {

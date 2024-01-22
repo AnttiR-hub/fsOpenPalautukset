@@ -1,4 +1,4 @@
-export interface Diagnose {
+export interface Diagnosis {
   code: string;
   name: string;
   latin?: string;
@@ -27,7 +27,7 @@ export interface BaseEntry {
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes?: Array<Diagnose['code']>;
+  diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 export type NewBaseEntry = Omit<BaseEntry, 'id'>;
@@ -45,8 +45,8 @@ export interface HealthCheckEntry extends BaseEntry {
 }
 
 export interface SickLeave {
-    start: string;
-    end: string;
+    startDate: string;
+    endDate: string;
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {

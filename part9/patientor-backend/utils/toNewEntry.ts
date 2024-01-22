@@ -61,8 +61,8 @@ const parseSickLeave = (object: unknown): SickLeave => {
     if( 'startDate' in object
        && 'endDate' in object){
         const sickLeave: SickLeave = {
-            start: parseDate(object.startDate),
-            end: parseDate(object.endDate)
+            startDate: parseDate(object.startDate),
+            endDate: parseDate(object.endDate)
         };
         return sickLeave;
     }

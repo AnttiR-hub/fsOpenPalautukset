@@ -6,7 +6,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import WorkIcon from '@mui/icons-material/Work';
 import { Typography, Button } from "@mui/material";
-import Box from '@mui/material/Box';
 import patientService from "../../services/patients";
 import axios from "axios";
 import AddEntryModal from "../AddEntryModal";
@@ -25,7 +24,7 @@ const genderId = (gender: Gender | undefined ) => {
         default:
             return null;
     }
-}
+};
 
 const HealthRating = (health: HealthCheckRating) => {
     switch(health){
@@ -38,7 +37,7 @@ const HealthRating = (health: HealthCheckRating) => {
         case 3:
             return <FavoriteIcon sx={{ color: "red" }}/>;
     }
-}
+};
 
 const assertNever = (value: never): never => {
     throw new Error(
@@ -76,7 +75,7 @@ const EntryDetails = ({ entry }: { entry: Entry } ) => {
         default:
             return assertNever(entry);
     }
-}
+};
 
 const OnePatientPage = ({ patient, diagnoses }: Props) => {
 
@@ -112,6 +111,8 @@ const OnePatientPage = ({ patient, diagnoses }: Props) => {
         }
       }
     };
+ 
+    console.log(patient);
 
    return(
     <div>
@@ -128,10 +129,10 @@ const OnePatientPage = ({ patient, diagnoses }: Props) => {
          Add New Entry
        </Button>
        <Typography component="h6" variant="h6">entries</Typography>
+
        {patient?.entries.map(e => {
             return (
                 <div key={e.id}>
-                  <Box sx={{ border: '1px solid grey', borderRadius: 4, padding: 2, margin: 1  }} >
                     <p>{e.date}</p>
                     {e.type === "OccupationalHealthcare" ?
                         e.employerName ? 
@@ -144,22 +145,21 @@ const OnePatientPage = ({ patient, diagnoses }: Props) => {
                     <p><i>{e.description}</i></p>
                     <ul>
                         {e.diagnosisCodes?.map(d => {
-                            const diagnosis = diagnoses.find(diagnose => diagnose.code === d)?.name
+                            const diagnosis = diagnoses.find(diagnose => diagnose.code === d)?.name;
                             return ( 
                             <li key={d}>{d} {diagnosis? diagnosis : null}</li> 
-                            )
+                            );
                           }
                         )}
                      </ul>
                      <EntryDetails entry={e}/>
                      <p>diagnose by {e.specialist}</p>
-                  </Box> 
                  
-                </div>)
+                </div>);
             }
         )}
     </div>
-   )
-}
+   );
+};
 
 export default OnePatientPage;

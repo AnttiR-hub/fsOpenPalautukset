@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState, useContext } from "react";
 import { OutlinedInput, SelectChangeEvent, Typography, TextField, Grid, Button, InputLabel, Select, MenuItem } from "@mui/material";
-import { Diagnose, EntryWithoutId, HealthCheckRating} from "../../types";
+import { Diagnosis, EntryWithoutId, HealthCheckRating} from "../../types";
 import DiagnosesContext from "../../diagnosesContext";
 
 interface Props {
@@ -20,46 +20,46 @@ const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.values(Health
 }));
 
 const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
-    const [description, setDescription] = useState('')
-    const [date, setDate] = useState('')
-    const [specialist, setSpecialist] = useState('')
-    const [diagnosisCodes, setDiagnosisCodes] = useState<Array<Diagnose["code"]>>([])
-    const [healthCheckRating, setHealthCheckRating] = useState(HealthCheckRating.Healthy)
-    const [dischargeDate, setDischargeDate] = useState('')
-    const [dischargeCriteria, setDischargeCriteria] = useState('')
-    const [employerName, setEmployerName] = useState('')
-    const [sickLeaveStart, setSickLeaveStart] = useState('')
-    const [sickLeaveEnd, setSickLeaveEnd] = useState('')
-    const [entryOptions, setEntryOptions] = useState('')
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [specialist, setSpecialist] = useState('');
+    const [diagnosisCodes, setDiagnosisCodes] = useState<Array<Diagnosis["code"]>>([]);
+    const [healthCheckRating, setHealthCheckRating] = useState(HealthCheckRating.Healthy);
+    const [dischargeDate, setDischargeDate] = useState('');
+    const [dischargeCriteria, setDischargeCriteria] = useState('');
+    const [employerName, setEmployerName] = useState('');
+    const [sickLeaveStart, setSickLeaveStart] = useState('');
+    const [sickLeaveEnd, setSickLeaveEnd] = useState('');
+    const [entryOptions, setEntryOptions] = useState('');
 
-    const diagnoses = useContext(DiagnosesContext)
+    const diagnoses = useContext(DiagnosesContext);
 
     const onHealthCheckRatingChange = (event: SelectChangeEvent<string>) => {
         event.preventDefault();
 
         const value = Number(event.target.value);
-        console.log(value)
+        console.log(value);
 
-        const healthCheckRating = Object.values(HealthCheckRating)
-        console.log(healthCheckRating)
+        const healthCheckRating = Object.values(HealthCheckRating);
+        console.log(healthCheckRating);
 
         if (value && healthCheckRating.includes(value)) {
           setHealthCheckRating(value);
         } 
 
-    } 
+    }; 
 
     const onDiagnosisCodesChange = (event: SelectChangeEvent<string[]>) => {
         event.preventDefault();
 
         const value = event.target.value;
-        console.log(value)
+        console.log(value);
 
         typeof value === "string" ?
         setDiagnosisCodes(value.split(', '))
         :
-        setDiagnosisCodes(value)
-    }
+        setDiagnosisCodes(value);
+    };
 
     const addEntry = (event: SyntheticEvent) => {
         event.preventDefault();
@@ -69,7 +69,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             date,
             specialist,
             diagnosisCodes,
-        }
+        };
 
         switch(entryOptions){
             case "HealthCheck":
@@ -95,10 +95,10 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
                     ...baseEntry,
                     employerName: employerName,
                     sickLeave: sickLeaveStart && sickLeaveEnd ? {
-                        start: sickLeaveStart,
-                        end: sickLeaveEnd
+                        startDate: sickLeaveStart,
+                        endDate: sickLeaveEnd
                     }: undefined
-                })
+                });
         }
     };
 
@@ -255,7 +255,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
                 </form>
             
         </div>
-    )
-}
+    );
+};
 
 export default AddEntryForm;

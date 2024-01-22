@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Box, Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
+import { Table, Button, TableHead, Typography, TableCell, TableRow, TableBody } from '@mui/material';
 import axios from 'axios';
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 import { PatientFormValues, Patient } from "../../types";
 import AddPatientModal from "../AddPatientModal";
@@ -50,11 +50,11 @@ const PatientListPage = ({ patients, setPatients } : Props ) => {
 
   return (
     <div className="App">
-      <Box>
+
         <Typography align="center" variant="h6">
           Patient list
         </Typography>
-      </Box>
+
       <Table style={{ marginBottom: "1em" }}>
         <TableHead>
           <TableRow>
